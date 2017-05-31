@@ -4,6 +4,8 @@
 #include <string>
 #include <iostream>
 #include <limits>
+#include <netinet/in.h>
+
 using namespace std;
 
 //Object Declarations
@@ -54,7 +56,7 @@ int menu(UserInput *user){
 
 int connect(UserInput *user){
 	int sockfd;
-	struct sockaddrr_in address, serv_addr;
+	struct sockaddr_in serv_addr;
 
 
 	//create socket
@@ -63,6 +65,13 @@ int connect(UserInput *user){
 		exit(1);
 	}
 	//Connect to Socket
+
+	serv_addr.sin_family = AF_INET6;
+	serv_addr.sin_port = user->port;
+	//unsigned long
+	serv_addr.sin_addr = user->IP;
+
+
 
 }
 
