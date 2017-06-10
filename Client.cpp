@@ -60,19 +60,26 @@ int connect(UserInput *user){
 
 
 	//create socket
-	if ((sockfd = socket(AF_INET6, SOCK_STREAM, 0)) < 0){
+	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
 		cout << "Unable to Create Socket" << endl;
-		exit(1);
+		cout << "Please Try again, if error persists restart program" << endl;
+		menu();
 	}
-	//Connect to Socket
 
-	serv_addr.sin_family = AF_INET6;
-	serv_addr.sin_port = user->port;
-	//unsigned long
-	serv_addr.sin_addr = user->IP;
+	serv_addr.sin_family = AF_INET;
+	serv_addr.sin_port = htons(user->port);
+	serv_addr.sin_addr = inet_addr(user->IP);
 
+	if(connect(sockfd, (sockaddr*)&serv_addr, sizeof(serv_addr)) < 0){
+		cout << "Error connecting" << endl
+		cout << "Please Try again, if error persists restart program" << endl;
+		menu();
+	}
 
-
+	// send connnect with User/ password
+	// once connected allow message to be entered and broadcasted private
+	// message to come after
+	// constantly check for incoming messages
 }
 
 
@@ -91,5 +98,3 @@ int connect(UserInput *user){
 //Questions:
 
 //unique username and password stored in server local.txt?
-//Can you connect over an IP address?
-//hostname for Server?
