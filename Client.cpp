@@ -5,6 +5,7 @@
 #include <iostream>
 #include <limits>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 
 using namespace std;
 
@@ -63,19 +64,20 @@ int connect(UserInput *user){
 	if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
 		cout << "Unable to Create Socket" << endl;
 		cout << "Please Try again, if error persists restart program" << endl;
-		menu();
+		menu(user);
 	}
 
 	serv_addr.sin_family = AF_INET;
-	serv_addr.sin_port = htons(user->port);
-	serv_addr.sin_addr = inet_addr(user->IP);
+	serv_addr.sin_port = htons(user->portno);
+	const char* IP = user->IP.c_str();
+	inet_aton(IP, &serv_addr.sin_addr);
 
 	if(connect(sockfd, (sockaddr*)&serv_addr, sizeof(serv_addr)) < 0){
-		cout << "Error connecting" << endl
+		cout << "Error connecting" << endl;
 		cout << "Please Try again, if error persists restart program" << endl;
-		menu();
+		menu(user);
 	}
-
+	return 0;
 	// send connnect with User/ password
 	// once connected allow message to be entered and broadcasted private
 	// message to come after

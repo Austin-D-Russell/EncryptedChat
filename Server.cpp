@@ -1,7 +1,19 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/socket.h>
+#include <string>
+#include <iostream>
+#include <limits>
+#include <netinet/in.h>
+#include <pthread.h>
+
 using namespace std;
+
+static int MAXNUMBEROFCLIENTS = 20;
 
 int menu();
 int connect(int portno);
+void *client(void *arguments);
 
 int main(int argc, char* argv[]){
 	int portno = menu();
@@ -32,16 +44,18 @@ int connect(int portno){
 	int sockfd, option = 1;
 	struct sockaddr_in serv_addr;
 
+	cout << portno << endl;
+
 	cout << "Creating Socket......" << endl;
-	if(sockfd = socket(AF_INET, SOCK_STREAM, 0) < 0){
+	if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
 		cout << "Error creating Socket" << endl;
-		//exit or return to menu?
+		exit(1);
 	}
 
-	//setsockopt
 	if(setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (const char*)&option, sizeof(int)) < 0){
 		cout << "unable to set socket options to reuse address" << endl;
-		//exit or return to menu
+		cout << "Try another port..." << endl;
+		menu();
 	}
 
 	serv_addr.sin_family = AF_INET;
@@ -51,24 +65,47 @@ int connect(int portno){
 
 
 	cout << "Binding Socket......." << endl;
-	if(bind(sockfd, (struct sockaddr*)&remote, sizeof(serv_addr)) < 0){
-		cout << "Error Binding Socket" << endl;
-		//exit or return to menu
+	if(bind(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0){
+		cout << "Error Binding Socket, Try another port" << endl;
+		menu();
 	}
 
 	cout << "Listening on Socket....." << endl;
-	if(listen(sockfd, 1024) < 0){
+	if(listen(sockfd, MAXNUMBEROFCLIENTS) < 0){
 		cout << "Unable to Listen on Socket" << endl;
-		//exit or return to menu
+		exit(1);
 	}
 
-	int connfd;
+	//will need to change based on number of client connects
+	pthread_t thread[MAXNUMBEROFCLIENTS];
+	int i = 0; 
+
 	for(;;){
-		if((connfd = accept(sockfd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)))){
-			
+		struct sockaddr_in client_addr;
+		int connfd;
+		cout << "accepting client...." << endl;
+		if((connfd = accept(sockfd, (struct sockaddr*)&client_addr, (socklen_t*)sizeof(client_addr))) < 0){
+			cout << "Unable to accept connection" << endl;
+			//do something 
 		}
-	}
 
+		cout << "Spawning New Thread" << endl;
+		if(pthread_create(&thread[i++], NULL, &client, (void *)&connfd) < 0){
+			cout << "Thread Creation Error" << endl;
+			//do something with error
+		}
+		if(i == MAXNUMBEROFCLIENTS){
+			cout << "Max Number of Clients Reached" << endl;
+		}
+
+	}
+}
+
+void *client(void *arguments){
+	return NULL;
+
+	//allow sending of message and revieving of messages here
+	//allow link to broadcast/ private message for username
 
 }
 //allows mult client connects
