@@ -73,7 +73,12 @@ int connect(int portno){
 
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_port = htons(portno);
+	// This is Wrong, want to establish over public IP address
+	// fuck
 	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
+
+	cout << portno << endl;
+	cout << serv_addr.sin_addr.s_addr << endl;
 
 
 
@@ -101,6 +106,7 @@ int connect(int portno){
 			cout << "Unable to accept connection" << endl;
 			//do something 
 		}
+		cout << "Client accepted...." << endl;
 
 		args.clients[numberofclients] = connfd;
 		++numberofclients;
@@ -165,6 +171,7 @@ int broadcast(threadargs* args, char buffer[1024]){
 	FD_ZERO(&sendfds);
 	int n, sd;
 
+
 	for(int i = 0; i < MAXNUMBEROFCLIENTS ; i++){
 		if(args->clients[i] != -1 && args->clients[i] != args->connfd){
 			FD_SET(args->clients[i], &sendfds);
@@ -177,6 +184,16 @@ int broadcast(threadargs* args, char buffer[1024]){
 			//do we want to exit here??
 			exit(1);
 	}
+	for(int i = 0; i <MAXNUMBEROFCLIENTS; i++){
+		if(args->clients[i] != -1 && args->clients[i] != args->connfd){
+			if((send(args->clients[i], buffer, 1024, 0 )) < 0){
+				cout << "Error in Send" << endl;
+				//do we exit here??
+				exit(1);
+			}
+		}
+	}
+	
 
 	//send
 	return 0;
