@@ -1,5 +1,6 @@
 //Includes
 #include <stdio.h>
+#include <unistd.h>
 #include <sys/socket.h>
 #include <string>
 #include <iostream>
@@ -77,12 +78,12 @@ int connect(UserInput *user){
 	const char* IP = user->IP.c_str();
 	inet_aton(IP, &serv_addr.sin_addr);
 
-	cout << "connecting to socket..." << endl;
-	if(connect(sockfd, (sockaddr*)&serv_addr, sizeof(serv_addr)) < 0){
-		cout << "Error connecting" << endl;
-		cout << "Please Try again, if error persists restart program" << endl;
-		menu(user);
-	}
+	// cout << "connecting to socket..." << endl;
+	// if(connect(sockfd, (sockaddr*)&serv_addr, sizeof(serv_addr)) < 0){
+	// 	cout << "Error connecting" << endl;
+	// 	cout << "Please Try again, if error persists restart program" << endl;
+	// 	menu(user);
+	// }
 
 	user->sockfd = sockfd;
 
@@ -101,29 +102,33 @@ int handleUserInput(UserInput *user){
 }
 
 int startprogram(){
+	cout << "About to Init Screens" << endl;
+
 	WINDOW *input;
 	WINDOW *output;
 
-	cout << "About to Init Screens" << endl;
-
 	initscr();
-	start_color();
+	//start_color();
+	refresh();
+	output = create_new_win(LINES-5,COLS,0,0);
+	input = create_new_win(5, COLS, LINES-5, 0);
+	//move(LINES, 2);
+	sleep(10000);
+	//get char is registering input. need to clear cin or something. for
+	//now sleep is enable so I can see frame Drawing
+	getchar();
 
-	input = create_new_win(1, COLS, 0, 0);
-	output = create_new_win(LINES - 1, COLS, 0, 1);
+	endwin();
 
 	return 0;
 
 }
 
 WINDOW *create_new_win(int height, int width, int starty, int startx){
-	WINDOW *temp_win;
-
-	temp_win = newwin(height, width, starty, startx);
-	//Update here to make boarders to box ect. look nice
-	box(temp_win, 0, 0);
-
+	WINDOW *temp_win = newwin(height, width, starty, startx);
+	box(temp_win,'*','*');
 	wrefresh(temp_win);
+	//move(y,x) this is to move the cursor
 
 	return temp_win;
 }
@@ -146,6 +151,9 @@ void remove_win(WINDOW *temp_win){
 	//Encrypt
 	//Decrypt
 
-//Questions:
+//TODO:
 
-//unique username and password stored in server local.txt?
+//unique username and password stored in server local.txt
+//Window Resize
+//Move Cursor for Input
+//Change getchar to work appropriatly
