@@ -73,8 +73,7 @@ int connect(int portno){
 
 	serv_addr.sin_family = AF_INET;
 	serv_addr.sin_port = htons(portno);
-	// This is Wrong, want to establish over public IP address
-	// fuck
+	//I think this is right I just need to portforward after getting the port
 	serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
 	cout << portno << endl;

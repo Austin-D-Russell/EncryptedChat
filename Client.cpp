@@ -83,7 +83,7 @@ int connect(UserInput *user){
 	// 	cout << "Error connecting" << endl;
 	// 	cout << "Please Try again, if error persists restart program" << endl;
 	// 	menu(user);
-	// }
+	//
 
 	user->sockfd = sockfd;
 
@@ -103,20 +103,28 @@ int handleUserInput(UserInput *user){
 
 int startprogram(){
 	cout << "About to Init Screens" << endl;
-
+	int ch;
 	WINDOW *input;
 	WINDOW *output;
 
 	initscr();
-	//start_color();
 	refresh();
+	cbreak();
+	start_color();
+	keypad(stdscr, TRUE);
+	echo();
+	//the one will change when username is inputed
+	move(LINES-4, 1);
 	output = create_new_win(LINES-5,COLS,0,0);
 	input = create_new_win(5, COLS, LINES-5, 0);
-	//move(LINES, 2);
-	sleep(10000);
+
 	//get char is registering input. need to clear cin or something. for
 	//now sleep is enable so I can see frame Drawing
-	getchar();
+	while((ch = getch()) != KEY_F(1)){
+		continue; 
+	}
+	
+	// Might want to read into Char Buffer as key is pressed.
 
 	endwin();
 
@@ -128,7 +136,6 @@ WINDOW *create_new_win(int height, int width, int starty, int startx){
 	WINDOW *temp_win = newwin(height, width, starty, startx);
 	box(temp_win,'*','*');
 	wrefresh(temp_win);
-	//move(y,x) this is to move the cursor
 
 	return temp_win;
 }
@@ -141,11 +148,6 @@ void remove_win(WINDOW *temp_win){
 	delwin(temp_win);
 }
 //Functions
-	//Menu
-	//Connect
-		//Create Socket
-		//Connect to Socket
-		//Send and Recieve
 	//Send
 	//Recv
 	//Encrypt
@@ -157,3 +159,10 @@ void remove_win(WINDOW *temp_win){
 //Window Resize
 //Move Cursor for Input
 //Change getchar to work appropriatly
+
+
+//Commands::
+// :help
+// :quit
+// :who
+// :file (prompts user to grab file)
