@@ -1,7 +1,7 @@
 CXX = g++
 DEBUG = -g
 RM = rm -f
-LIBS = -lpthread -lncurses
+LIBS = -lpthread -lncurses -lform
 CFLAGS = -Wall $(DEBUG)
 TARGET = Server Client
 

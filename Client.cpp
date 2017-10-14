@@ -8,6 +8,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <ncurses.h>
+#include <form.h>
+
+// static FIELD *fields[2];
 
 using namespace std;
 
@@ -25,6 +28,7 @@ int handleUserInput(UserInput *user);
 int startprogram();
 WINDOW *create_new_win(int height, int width, int starty, int startx);
 void remove_win(WINDOW *temp_win);
+void input_driver(int ch);
 
 int main(int argc, char *argv[]){
 
@@ -101,31 +105,70 @@ int handleUserInput(UserInput *user){
 	return 0;
 }
 
+void input_driver(int ch){
+	// if(ch != ERR){
+	// 	srtcat
+	// }
+}
+
 int startprogram(){
 	cout << "About to Init Screens" << endl;
 	int ch;
 	WINDOW *input;
+	WINDOW *inputBox;
 	WINDOW *output;
 
 	initscr();
-	refresh();
 	cbreak();
 	start_color();
 	keypad(stdscr, TRUE);
 	echo();
-	//the one will change when username is inputed
-	move(LINES-4, 1);
-	output = create_new_win(LINES-5,COLS,0,0);
-	input = create_new_win(5, COLS, LINES-5, 0);
 
-	//get char is registering input. need to clear cin or something. for
-	//now sleep is enable so I can see frame Drawing
+	//the one will change when username is inputed
+	// move(LINES-4, 1);
+
+	output = create_new_win(LINES-5,COLS,0,0);
+	inputBox = create_new_win(5, COLS, LINES-5, 0);
+	input = subwin(inputBox, 3, COLS-2, LINES-4, 1);
+
+	wmove(input, 0, 0);
+
+	// immedok(input, TRUE); // Didnt Work yet
+	// scrollok(input,TRUE); //This should add Scrolling as need be
+	// wsetscrreg(top,1,maxy/2-2); //Not sure what this does yet. To the Man Pages!
+ 
+
+	// box(output, 0, 0);
+	// box(input, 0, 0);
+	// fields[0] = new_field(LINES-5,COLS,0,0,0,0);
+	// fields[1] = new_field(5,COLS,LINES-5,0,0,0);
+
+	// can use this field to set a welcome message when logging on
+	// set_field_buffer(fields[0], 0, val1)
+	
+
+	// set_field_opts(fields[0], O_VISIBLE | O_PUBLIC | O_AUTOSKIP);
+	// set_field_opts(fields[1], O_VISIBLE | O_ACTIVE | O_PUBLIC | O_EDIT | O_WRAP);
+
+	//might wanna window/ text refresh here
+
+	refresh();
+	wrefresh(inputBox);
+	wrefresh(input);
+	wrefresh(output);
+
+	//get char is registering input.
 	while((ch = getch()) != KEY_F(1)){
+		input_driver(ch);
+		// Might want to read into Char Buffer as key is pressed.
+		// Call send when enter is pressed
 		continue; 
 	}
-	
-	// Might want to read into Char Buffer as key is pressed.
 
+	// free_field(fields[0]);
+	// free_field(fields[1]);
+	delwin(output);
+	delwin(input);
 	endwin();
 
 	return 0;
@@ -135,8 +178,6 @@ int startprogram(){
 WINDOW *create_new_win(int height, int width, int starty, int startx){
 	WINDOW *temp_win = newwin(height, width, starty, startx);
 	box(temp_win,'*','*');
-	wrefresh(temp_win);
-
 	return temp_win;
 }
 
@@ -147,6 +188,7 @@ void remove_win(WINDOW *temp_win){
 	wrefresh(temp_win);
 	delwin(temp_win);
 }
+
 //Functions
 	//Send
 	//Recv
