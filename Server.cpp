@@ -7,6 +7,7 @@
 #include <netinet/in.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <errno.h>
 
 using namespace std;
 
@@ -57,8 +58,6 @@ int connect(int portno){
 		args.clients[i] = -1;
 	}
 
-	cout << portno << endl;
-
 	cout << "Creating Socket......" << endl;
 	if((sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
 		cout << "Error creating Socket" << endl;
@@ -97,13 +96,17 @@ int connect(int portno){
 	pthread_t thread[MAXNUMBEROFCLIENTS];
 	int threadcount = 0; 
 	int numberofclients = 0;
+
 	for(;;){
 		struct sockaddr_in client_addr;
 		int connfd;
-		cout << "accepting client...." << endl;
-		if((connfd = accept(sockfd, (struct sockaddr*)&client_addr, (socklen_t*)sizeof(client_addr))) < 0){
+		socklen_t cli_addr_size = sizeof(client_addr);
+
+		cout << "accepting clients...." << endl;
+		if((connfd = accept(sockfd, (struct sockaddr*)&client_addr, &cli_addr_size)) < 0){
 			cout << "Unable to accept connection" << endl;
-			//do something 
+			printf("%d",errno);
+			continue;
 		}
 		cout << "Client accepted...." << endl;
 
@@ -114,6 +117,7 @@ int connect(int portno){
 		cout << "Spawning New Thread" << endl;
 		if(pthread_create(&thread[threadcount++], NULL, &client, (void *)&args) < 0){
 			cout << "Thread Creation Error" << endl;
+			printf("%d",errno);
 			//do something with error
 		}
 		if(threadcount == MAXNUMBEROFCLIENTS){
