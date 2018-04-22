@@ -159,9 +159,35 @@ int initScreens(){
 
 void eventLoop(Windows *win){
 	int ch;
+	
+	//add username to window
+
+	//while not send add character to the window and add to the buffer
+
+
 	while((ch = getch()) != KEY_F(1)){
-		wprintw(win->inputwindow, (char *)&ch);
-		wrefresh(win->inputwindow);
+		switch(ch){
+			case KEY_UP:
+				break;
+			case KEY_DOWN:
+				break;
+			case KEY_LEFT:
+				break;
+			case KEY_RIGHT:
+				break;
+			case KEY_BACKSPACE:
+				break;
+			case KEY_DL:
+				break;
+			case KEY_ENTER:
+				break;
+			default:
+				wprintw(win->inputwindow, (char *)&ch);
+				wrefresh(win->inputwindow);
+			
+		}
+
+
 	 	// Might want to read into Char Buffer as key is pressed.
 	 	// Call send when enter is pressed
 	}
